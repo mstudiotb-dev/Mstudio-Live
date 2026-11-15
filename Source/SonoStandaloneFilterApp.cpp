@@ -83,9 +83,9 @@ public:
 
         options.applicationName     = getApplicationName();
         options.filenameSuffix      = ".settings";
-        options.osxLibrarySubFolder = "Application Support/SonoBus";
+        options.osxLibrarySubFolder = "Application Support/MStudio Live";
        #if JUCE_LINUX
-        options.folderName          = "~/.config/sonobus";
+        options.folderName          = "~/.config/mstudiolive";
        #else
         options.folderName          = "";
        #endif
@@ -93,8 +93,8 @@ public:
         appProperties.setStorageParameters (options);
 
 #if JUCE_LINUX
-        // we moved linux settings location in 1.3.19, one time change
-        File oldsettings("~/.config/SonoBus.settings");
+        // MStudio Live v1: one-time migration of settings from upstream SonoBus, if present
+        File oldsettings("~/.config/sonobus/SonoBus.settings");
         if (oldsettings.exists()) {
             File newsettings = options.getDefaultFile();
             if (!newsettings.getParentDirectory().exists()) {

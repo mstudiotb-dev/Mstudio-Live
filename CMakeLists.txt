@@ -36,9 +36,9 @@ endif()
 # `project()` command. `project()` sets up some helpful variables that describe source/binary
 # directories, and the current project version. This is a standard CMake command.
 
-project(SonoBus VERSION 1.7.2)
+project(MStudioLive VERSION 1.0.0)
 
-set(BUILDVERSION 80)
+set(BUILDVERSION 1)
 
 
 # If you've installed JUCE somehow (via a package manager, or directly using the CMake install
@@ -123,10 +123,10 @@ set (MacPList "<plist version=\"1.0\">
 <array>
      <dict>
          <key>CFBundleURLName</key>
-         <string>net.sonobus</string>
+         <string>com.mstudio.live</string>
          <key>CFBundleURLSchemes</key>
          <array>
-              <string>sonobus</string>
+              <string>mstudiolive</string>
          </array>
       </dict>
    </array>
@@ -155,8 +155,8 @@ function(sono_add_custom_plugin_target target_name product_name formats is_instr
         NEEDS_MIDI_INPUT TRUE
         NEEDS_MIDI_OUTPUT TRUE
         EDITOR_WANTS_KEYBOARD_FOCUS TRUE
-        COMPANY_NAME "Sonosaurus"
-        BUNDLE_ID "com.Sonosaurus.SonoBus"
+        COMPANY_NAME "MStudio"
+        BUNDLE_ID "com.mstudio.live"
         MICROPHONE_PERMISSION_ENABLED TRUE
         
         ICON_BIG "images/sonobus_icon_mac_1024.png"
@@ -166,7 +166,7 @@ function(sono_add_custom_plugin_target target_name product_name formats is_instr
         VST3_CATEGORIES "${vst3cats}"
         AAX_CATEGORY "AAX_ePlugInCategory_None"
 
-	LV2URI "https://sonobus.net/lv2/sonobus"
+	LV2URI "https://mstudiotb.com/lv2/mstudiolive"
 	
         # mac settings
         HARDENED_RUNTIME_ENABLED TRUE
@@ -176,10 +176,10 @@ function(sono_add_custom_plugin_target target_name product_name formats is_instr
         
         
         # other settings...
-        PLUGIN_MANUFACTURER_CODE Sono
+        PLUGIN_MANUFACTURER_CODE MLiv
         PLUGIN_CODE ${plugincode}
         FORMATS ${formats}
-        DESCRIPTION "SonoBus - Network Audio"
+        DESCRIPTION "MStudio Live - Network Audio"
         PRODUCT_NAME "${product_name}")
 
     juce_generate_juce_header("${target_name}")
@@ -621,11 +621,11 @@ function(sono_add_custom_plugin_target target_name product_name formats is_instr
 endfunction()
 
 # most of the targets
-sono_add_custom_plugin_target(SonoBus SonoBus "${FormatsToBuild}" FALSE  "NBus")
+sono_add_custom_plugin_target(MStudioLive "MStudio Live" "${FormatsToBuild}" FALSE  "NBus")
 
 # Mobile targets
 #sono_add_custom_plugin_target(SonoBusMobile "AUv3 Standalone" FALSE "NBus")
 
 # add VSTi target
-sono_add_custom_plugin_target(SonoBusInst "SonoBusInstrument" "VST3" TRUE  "IBus")
+sono_add_custom_plugin_target(MStudioLiveInst "MStudio Live Instrument" "VST3" TRUE  "MLvi")
 

@@ -86,7 +86,7 @@ publicGroupsListModel(this)
     mRemoteAddressStaticLabel = std::make_unique<Label>("remaddrst", TRANS("Host: "));
     mRemoteAddressStaticLabel->setJustificationType(Justification::centredRight);
 
-    mDirectConnectDescriptionLabel = std::make_unique<Label>("dirconndesc", TRANS("Connect directly to other instances of SonoBus on your local network with the local address that they advertise. This is experimental, using a private group is recommended instead, and works fine on local networks."));
+    mDirectConnectDescriptionLabel = std::make_unique<Label>("dirconndesc", TRANS("Connect directly to other instances of MStudio Live on your local network with the local address that they advertise. This is experimental, using a private group is recommended instead, and works fine on local networks."));
     mDirectConnectDescriptionLabel->setJustificationType(Justification::topLeft);
 
     mAddRemoteHostEditor = std::make_unique<TextEditor>("remaddredit");
@@ -865,7 +865,7 @@ void ConnectView::publicGroupLogin()
 
 bool ConnectView::copyInfoToClipboard(bool singleURL, String * retmessage)
 {
-    String message = TRANS("Share this link with others to connect with SonoBus:") + " \n";
+    String message = TRANS("Share this link with others to connect with MStudio Live:") + " \n";
 
     String hostport = mServerHostEditor->getText();
     if (hostport.isEmpty()) {
@@ -886,36 +886,32 @@ bool ConnectView::copyInfoToClipboard(bool singleURL, String * retmessage)
     }
 
     String urlstr1;
-    urlstr1 << String("sonobus://") << hostport << String("/");
+    urlstr1 << String("mstudiolive://") << hostport << String("/");
     URL url(urlstr1);
-    URL url2("http://go.sonobus.net/sblaunch");
+    // MStudio Live v1: no MStudio web launcher exists yet, so share the
+    // mstudiolive:// link directly (go.sonobus.net would launch upstream SonoBus).
 
     if (url.isWellFormed() && groupName.isNotEmpty()) {
 
-        url2 = url2.withParameter("s", hostport);
-
         url = url.withParameter("g", groupName);
-        url2 = url2.withParameter("g", groupName);
 
         if (groupPassword.isNotEmpty()) {
             url = url.withParameter("p", groupPassword);
-            url2 = url2.withParameter("p", groupPassword);
         }
 
         if (processor.isConnectedToServer() && currConnectionInfo.groupIsPublic) {
             url = url.withParameter("public", "1");
-            url2 = url2.withParameter("public", "1");
         }
 
         //message += url.toString(true);
         //message += "\n\n";
 
         //message += TRANS("Or share this link:") + "\n";
-        message += url2.toString(true);
+        message += url.toString(true);
         message += "\n";
 
         if (singleURL) {
-            message = url2.toString(true);
+            message = url.toString(true);
         }
         SystemClipboard::copyTextToClipboard(message);
 
@@ -1321,8 +1317,9 @@ bool ConnectView::attemptToPasteConnectionFromClipboard()
     auto clip = SystemClipboard::getTextFromClipboard();
 
     if (clip.isNotEmpty()) {
-        // look for sonobus URL anywhere in it
-        String urlpart = clip.fromFirstOccurrenceOf("sonobus://", true, true);
+        // look for mstudiolive URL (or legacy sonobus URL) anywhere in it
+        String urlpart = clip.fromFirstOccurrenceOf("mstudiolive://", true, true);
+        if (urlpart.isEmpty()) urlpart = clip.fromFirstOccurrenceOf("sonobus://", true, true);
         if (urlpart.isNotEmpty()) {
             // find the end (whitespace) and strip it out
             urlpart = urlpart.upToFirstOccurrenceOf("\n", false, true).trim();
@@ -1330,7 +1327,7 @@ bool ConnectView::attemptToPasteConnectionFromClipboard()
             URL url(urlpart);
 
             if (url.isWellFormed()) {
-                DBG("Got good sonobus URL: " << urlpart);
+                DBG("Got good connect URL: " << urlpart);
 
                 // clear clipboard
                 SystemClipboard::copyTextToClipboard("");
@@ -1365,7 +1362,7 @@ bool ConnectView::attemptToPasteConnectionFromClipboard()
 bool ConnectView::handleSonobusURL(const URL & url)
 {
     // look for either  http://go.sonobus.net/sblaunch?  style url
-    // or sonobus://host:port/? style
+    // or mstudiolive://host:port/? style (legacy sonobus:// also accepted)
 
     auto & pnames = url.getParameterNames();
     auto & pvals = url.getParameterValues();
@@ -1388,7 +1385,7 @@ bool ConnectView::handleSonobusURL(const URL & url)
 
     }
 
-    if (url.getScheme() == "sonobus") {
+    if (url.getScheme() == "mstudiolive" || url.getScheme() == "sonobus") {
         // use domain part as host:port
         String hostpart = url.getDomain();
         currConnectionInfo.serverHost =  hostpart.upToFirstOccurrenceOf(":", false, true);

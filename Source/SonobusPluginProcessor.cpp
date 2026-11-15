@@ -739,11 +739,11 @@ mState (*this, &mUndoManager, "SonoBusAoO",
     
     // use this to match our main app support dir
     PropertiesFile::Options options;
-    options.applicationName     = "SonoBus";
+    options.applicationName     = "MStudio Live";
     options.filenameSuffix      = ".xml";
-    options.osxLibrarySubFolder = "Application Support/SonoBus";
+    options.osxLibrarySubFolder = "Application Support/MStudio Live";
    #if JUCE_LINUX
-    options.folderName          = "~/.config/sonobus";
+    options.folderName          = "~/.config/mstudiolive";
    #else
     options.folderName          = "";
    #endif
@@ -766,7 +766,7 @@ mState (*this, &mUndoManager, "SonoBusAoO",
     // LEAVE EMPTY by default
 #else
     auto parentDir = File::getSpecialLocation (File::userMusicDirectory);
-    parentDir = parentDir.getChildFile("SonoBus");
+    parentDir = parentDir.getChildFile("MStudio Live");
     mDefaultRecordDir = URL(parentDir);
     mLastBrowseDir = mDefaultRecordDir.getLocalFile().getFullPathName();
 #endif
@@ -865,9 +865,9 @@ void SonobusAudioProcessor::moveOldMisplacedFiles()
     PropertiesFile::Options dummyoptions;
     dummyoptions.applicationName     = "dummy";
     dummyoptions.filenameSuffix      = ".xml";
-    dummyoptions.osxLibrarySubFolder = "Application Support/SonoBus";
+    dummyoptions.osxLibrarySubFolder = "Application Support/MStudio Live";
    #if JUCE_LINUX
-    dummyoptions.folderName          = "~/.config/sonobus";
+    dummyoptions.folderName          = "~/.config/mstudiolive";
    #else
     dummyoptions.folderName          = "";
    #endif

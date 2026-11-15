@@ -649,7 +649,7 @@ void ChatView::showSaveChat()
 {
     SafePointer<ChatView> safeThis (this);
 
-    File recdir; // = File::getSpecialLocation(File::userDocumentsDirectory).getChildFile("SonoBus Setups");
+    File recdir; // = File::getSpecialLocation(File::userDocumentsDirectory).getChildFile("MStudio Live Setups");
 
     // TODO - on iOS we need to give it a name first
 //#if (JUCE_IOS || JUCE_ANDROID)

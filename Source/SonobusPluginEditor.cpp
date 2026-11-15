@@ -46,7 +46,7 @@ enum {
     PeerLayoutRadioGroupId = 1
 };
 
-#define SONOBUS_SCHEME "sonobus"
+#define SONOBUS_SCHEME "mstudiolive"
 
 using namespace SonoAudio;
 
@@ -346,7 +346,7 @@ SonobusAudioProcessorEditor::SonobusAudioProcessorEditor (SonobusAudioProcessor&
         currConnectionInfo.userName = lastusername;
     }
 
-    mTitleLabel = std::make_unique<Label>("title", TRANS("SonoBus"));
+    mTitleLabel = std::make_unique<Label>("title", TRANS("MStudio Live"));
     mTitleLabel->setFont(20);
     mTitleLabel->setAccessible(false);
     mTitleLabel->setColour(Label::textColourId, Colour(0xff47b0f8));
@@ -1960,7 +1960,10 @@ void SonobusAudioProcessorEditor::timerCallback(int timerid)
             Value * val = getShouldCheckForNewVersionValue();
             if (val && (bool)val->getValue()) {
                 DBG("Checking for new version");
+                // MStudio Live v1: auto-updater disabled (no MStudio releases repo yet)
+#if 0
                 LatestVersionCheckerAndUpdater::getInstance()->checkForNewVersion (false);
+#endif
             }
         }
         stopTimer(CheckForNewVersionTimerId);
@@ -2213,7 +2216,7 @@ void SonobusAudioProcessorEditor::buttonClicked (Button* buttonThatWasClicked)
 #endif
             
             // create new timestamped filename
-            String filename = (currGroup.isEmpty() ? "SonoBusSession" : currGroup) + String("_") + Time::getCurrentTime().formatted("%Y-%m-%d_%H.%M.%S");
+            String filename = (currGroup.isEmpty() ? "MStudioLiveSession" : currGroup) + String("_") + Time::getCurrentTime().formatted("%Y-%m-%d_%H.%M.%S");
 
             filename = File::createLegalFileName(filename);
 
@@ -2560,7 +2563,7 @@ void SonobusAudioProcessorEditor::showSaveSettingsPreset()
 
     mFileChooser.reset(new FileChooser(TRANS("Choose a location and name to store the setup"),
                                        recdir,
-                                       "*.sonobus",
+                                       "*.mstudiolive",
                                        true, false, getTopLevelComponent()));
 
 
@@ -2606,7 +2609,7 @@ void SonobusAudioProcessorEditor::showLoadSettingsPreset()
 
     mFileChooser.reset(new FileChooser(TRANS("Choose a setup file to load"),
                                        recdir,
-                                       "*.sonobus",
+                                       "*.mstudiolive",
                                        true, false, getTopLevelComponent()));
 
 
@@ -5718,7 +5721,8 @@ void SonobusAudioProcessorEditor::getAllCommands (Array<CommandID>& cmds) {
     cmds.add(SonobusCommands::ShowOptions);
     cmds.add(SonobusCommands::OpenFile);
     cmds.add(SonobusCommands::RecordToggle);
-    cmds.add(SonobusCommands::CheckForNewVersion);
+    // MStudio Live v1: auto-updater disabled, command hidden
+    // cmds.add(SonobusCommands::CheckForNewVersion);
     cmds.add(SonobusCommands::LoadSetupFile);
     cmds.add(SonobusCommands::SaveSetupFile);
     cmds.add(SonobusCommands::ChatToggle);
@@ -5882,7 +5886,10 @@ bool SonobusAudioProcessorEditor::perform (const InvocationInfo& info) {
 
             break;
         case SonobusCommands::CheckForNewVersion:   
-            LatestVersionCheckerAndUpdater::getInstance()->checkForNewVersion (true); 
+            // MStudio Live v1: auto-updater disabled (no MStudio releases repo yet)
+#if 0
+            LatestVersionCheckerAndUpdater::getInstance()->checkForNewVersion (true);
+#endif
             break;
 
         case SonobusCommands::CopyGroupLink:
@@ -5979,7 +5986,8 @@ PopupMenu SonobusAudioProcessorEditor::SonobusMenuBarModel::getMenuForIndex (int
             retval.addCommandItem (&parent.commandManager, SonobusCommands::SaveSetupFile);
 
             retval.addSeparator();
-            retval.addCommandItem (&parent.commandManager, SonobusCommands::CheckForNewVersion);
+            // MStudio Live v1: auto-updater disabled, menu item hidden
+            // retval.addCommandItem (&parent.commandManager, SonobusCommands::CheckForNewVersion);
 
 #if (JUCE_WINDOWS || JUCE_LINUX)
             retval.addCommandItem (&parent.commandManager, SonobusCommands::ShowOptions);

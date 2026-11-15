@@ -390,7 +390,8 @@ OptionsView::OptionsView(SonobusAudioProcessor& proc, std::function<AudioDeviceM
 
     if (JUCEApplicationBase::isStandaloneApp()) {
         mOptionsComponent->addAndMakeVisible(mOptionsOverrideSamplerateButton.get());
-        mOptionsComponent->addAndMakeVisible(mOptionsShouldCheckForUpdateButton.get());
+        // MStudio Live v1: auto-updater disabled, toggle hidden
+        // mOptionsComponent->addAndMakeVisible(mOptionsShouldCheckForUpdateButton.get());
         if (mOptionsAllowBluetoothInput) {
             mOptionsComponent->addAndMakeVisible(mOptionsAllowBluetoothInput.get());
         }
@@ -783,7 +784,8 @@ void OptionsView::updateLayout()
     optionsCheckForUpdateBox.items.clear();
     optionsCheckForUpdateBox.flexDirection = FlexBox::Direction::row;
     optionsCheckForUpdateBox.items.add(FlexItem(10, 12).withFlex(0));
-    optionsCheckForUpdateBox.items.add(FlexItem(180, minpassheight, *mOptionsShouldCheckForUpdateButton).withMargin(0).withFlex(1));
+    // MStudio Live v1: auto-updater disabled, toggle hidden
+    // optionsCheckForUpdateBox.items.add(FlexItem(180, minpassheight, *mOptionsShouldCheckForUpdateButton).withMargin(0).withFlex(1));
 
     optionsSnapToMouseBox.items.clear();
     optionsSnapToMouseBox.flexDirection = FlexBox::Direction::row;

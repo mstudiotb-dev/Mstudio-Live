@@ -18,6 +18,11 @@ endif()
 # If we are compiling for Mac OS we want to target OS versions down to 10.9
 option(UniversalBinary "Build universal binary for mac" ON)
 
+# MStudio Live: set -DMSTUDIOLIVE_DISABLE_ASIO=ON to build without the
+# Steinberg ASIO SDK (e.g. on CI, where the SDK cannot be fetched).
+# Windows audio then uses WASAPI (JUCE_WASAPI=1). Default OFF = ASIO on, as upstream.
+option(MSTUDIOLIVE_DISABLE_ASIO "Disable ASIO support (build without the Steinberg ASIO SDK)" OFF)
+
 if (APPLE)
     set (CMAKE_OSX_DEPLOYMENT_TARGET "10.10" CACHE INTERNAL "")
     if (UniversalBinary)
@@ -436,6 +441,13 @@ function(sono_add_custom_plugin_target target_name product_name formats is_instr
     endforeach()
     
     
+    # MStudio Live: CI builds without the ASIO SDK set MSTUDIOLIVE_DISABLE_ASIO=ON.
+    if (MSTUDIOLIVE_DISABLE_ASIO)
+        set(MSTUDIOLIVE_JUCE_ASIO 0)
+    else()
+        set(MSTUDIOLIVE_JUCE_ASIO 1)
+    endif()
+
     target_compile_definitions("${target_name}"
         PUBLIC
         JUCE_WEB_BROWSER=0
@@ -445,7 +457,7 @@ function(sono_add_custom_plugin_target target_name product_name formats is_instr
         JUCE_USE_CUSTOM_PLUGIN_STANDALONE_APP=1
 	JUCE_USE_WINDOWS_MEDIA_FORMAT=1
         JUCE_LOAD_CURL_SYMBOLS_LAZILY=1
-        JUCE_ASIO=1
+        JUCE_ASIO=${MSTUDIOLIVE_JUCE_ASIO}
         JUCE_WASAPI=1
         JUCE_DIRECTSOUND=0
         JUCE_JACK=1

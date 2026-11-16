@@ -1153,7 +1153,8 @@ SonobusAudioProcessorEditor::SonobusAudioProcessorEditor (SonobusAudioProcessor&
     
     mTopLevelContainer->addAndMakeVisible(mMainViewport.get());
     mTopLevelContainer->addAndMakeVisible(mTitleLabel.get());
-    //addAndMakeVisible(mTitleImage.get());
+    // MStudio Live: show the M logo in the header (upstream had this commented out).
+    mTopLevelContainer->addAndMakeVisible(mTitleImage.get());
 
     mTopLevelContainer->addAndMakeVisible(mMainLinkButton.get());
     mTopLevelContainer->addChildComponent(mMainLinkArrow.get());
@@ -4810,7 +4811,9 @@ void SonobusAudioProcessorEditor::updateLayout()
     titleBox.flexDirection = FlexBox::Direction::row;
     titleBox.items.add(FlexItem(2, 20).withMargin(1).withFlex(0));
     titleBox.items.add(FlexItem(minitemheight - 8, minitemheight - 12, *mSettingsButton).withMargin(1).withMaxWidth(44).withFlex(0));
-    titleBox.items.add(FlexItem(86, 20, *mTitleLabel).withMargin(1).withFlex(0));
+    // MStudio Live: M logo tile in the header, next to the title text.
+    titleBox.items.add(FlexItem(minitemheight - 8, minitemheight - 8, *mTitleImage).withMargin(1).withFlex(0));
+    titleBox.items.add(FlexItem(116, 20, *mTitleLabel).withMargin(1).withFlex(0));
     if (iaaConnected) {
         titleBox.items.add(FlexItem(4, 4).withMargin(1).withFlex(0.0));
         titleBox.items.add(FlexItem(minitemheight, minitemheight, *mIAAHostButton).withMargin(0).withFlex(0));

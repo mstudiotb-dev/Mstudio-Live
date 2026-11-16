@@ -1,16 +1,22 @@
 # MStudio Live — Windows build (CI)
 #
 # Builds the 64-bit Standalone .exe + VST3 plugins and packs them into the
-# Inno Setup installer (release/wininstaller.iss), then uploads the installer
-# as a workflow artifact.
+# Inno Setup installer (release/wininstaller.iss), then publishes the installer
+# as a GitHub Release (v1.0.0) so anyone with the link can download it.
 #
 # Notes:
+# - Logo: the logo PNGs are binary and live in the repo only as base64 text
+#   (images/*.png.b64). The "Decode MStudio logo" step below recreates the
+#   PNGs before building. For a local PC build, run images\decode-logo.ps1
+#   once after cloning. If the PNGs are ever uploaded to the repo directly,
+#   delete the .b64 files AND this decode step, or the decode will overwrite them.
 # - No Steinberg ASIO SDK on CI, so this builds with -DMSTUDIOLIVE_DISABLE_ASIO=ON
 #   (Windows audio uses WASAPI). Local builds on a PC keep ASIO (default OFF).
 # - The installer is UNSIGNED on CI (no code-signing certificate here):
 #   a throwaway copy of wininstaller.iss is built with the SignTool line
-#   stripped and SignedUninstaller=no. Signed releases use release/distwin.sh
-#   on a PC with CERTFILE set.
+#   stripped and SignedUninstaller=no. Windows SmartScreen will warn on first
+#   install — click "More info" > "Run anyway". Signed releases use
+#   release/distwin.sh on a PC with CERTFILE set.
 # - The [Files] entries in wininstaller.iss expect the staging layout
 #   release/MStudioLive/{MStudioLive.exe, Plugins/VST3/*.vst3, README.txt}.
 
@@ -27,6 +33,20 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+
+      - name: Decode MStudio logo
+        shell: pwsh
+        run: |
+          function Decode-Logo($b64, $dest) {
+            $bytes = [Convert]::FromBase64String((Get-Content $b64 -Raw).Trim())
+            [IO.File]::WriteAllBytes($dest, $bytes)
+          }
+          Decode-Logo images/mstudio_logo_1024.png.b64 images/sonobus_icon_mac_1024.png
+          Decode-Logo images/mstudio_logo_1024.png.b64 images/sonobus_logo@2x.png
+          Decode-Logo images/mstudio_logo_256.png.b64 images/sonobus_icon_mac_256.png
+          Decode-Logo images/mstudio_logo_96.png.b64 images/sonobus_logo_96.png
+          Decode-Logo images/mstudio_title_small.png.b64 images/sonobus_title_small.png
+          Decode-Logo images/mstudio_title.png.b64 images/sonobus_title.png
 
       - name: Install Inno Setup
         run: choco install innosetup -y
@@ -55,8 +75,17 @@ jobs:
           $iss | Set-Content release/wininstaller-ci.iss
           & "C:\Program Files (x86)\Inno Setup 6\ISCC.exe" /O"release\instoutput" /DSBVERSION="1.0.0" release/wininstaller-ci.iss
 
-      - name: Upload installer
+      - name: Upload installer artifact
         uses: actions/upload-artifact@v4
         with:
           name: MStudioLive-1.0.0-Windows-Installer
           path: release/instoutput/*.exe
+
+      - name: Publish GitHub Release
+        shell: pwsh
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release create v1.0.0 --title "MStudio Live 1.0.0" --notes "MStudio Live 1.0.0 — ban build Windows (Standalone + VST3, am thanh qua WASAPI, chua ky so). Xem HD.md de biet cach cai dat va ket noi." --target main 2>$null
+          if ($LASTEXITCODE -ne 0) { Write-Host "Release v1.0.0 already exists, uploading asset..." }
+          gh release upload v1.0.0 release/instoutput/*.exe --clobber
